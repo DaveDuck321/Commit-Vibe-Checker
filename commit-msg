@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import random
 
 HAPPY_WORDS = [
     "happy",
@@ -22,6 +23,24 @@ BORING_WORDS = [
     "bump",
 ]
 
+BORED_EMOJI = [
+    r"(´-ω-`)",
+    r"(‾̀ _ ‾̀ )",
+    r"(／ˍ・、)",
+    r"(ᴗ˳ᴗ)",
+    r"(っ˘̩╭╮˘̩)っ",
+    r"🥱",
+    r"*zzzzz*",
+]
+
+SAD_EMOJI = [
+    r"(ノ_ <。)",
+    r"(ﾉД`)",
+    r".・゜゜・（／。＼）・゜゜・．",
+    r"(゜´Д｀゜)",
+    r"(๑´╹‸╹`๑)",
+]
+
 
 def is_suitably_exotic(commit_subject: str) -> bool:
     exotic_letter_count = 0
@@ -42,10 +61,19 @@ def does_contains_word_in_list(word_list: list[str], commit_subject: str) -> boo
 
 def verify_legal_commit_subject(commit_subject: str) -> bool:
     if not is_suitably_exotic(commit_subject):
+        print(f"ASCII is boring {random.choice(BORED_EMOJI)}", file=sys.stderr)
+        print(f"🎯 try something fun instead", file=sys.stderr)
         return False
     if not does_contains_word_in_list(HAPPY_WORDS, commit_subject):
+        print(f"Why so sad {random.choice(SAD_EMOJI)}???", file=sys.stderr)
+        print("🎯 More happy words pls", file=sys.stderr)
         return False
     if does_contains_word_in_list(BORING_WORDS, commit_subject):
+        print(
+            f"Ok boomer, go back to IBM {random.choice(BORED_EMOJI)}!!",
+            file=sys.stderr,
+        )
+        print("🎯 Less tryhard speak thx", file=sys.stderr)
         return False
 
     return True
@@ -61,4 +89,5 @@ if __name__ == "__main__":
     commit_message = remove_comments_from_commit(whole_commit_message)
 
     if not verify_legal_commit_subject(commit_message[0]):
+        print(f"\nCommit vibe-check failed {random.choice(SAD_EMOJI)}!")
         exit(1)
