@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-import sys
 import random
+import string
+import sys
 
 HAPPY_WORDS = [
     "happy",
@@ -75,6 +76,35 @@ def does_contains_word_in_list(word_list: list[str], commit_subject: str) -> boo
     return False
 
 
+def is_suitably_exciting(commit_subject: str) -> bool:
+    maximum_possible_excitement = 0
+    excitement = 0
+
+    exclamation_streak = 0
+    for letter in commit_subject:
+        if letter in string.ascii_letters:
+            maximum_possible_excitement += 1
+            if letter in string.ascii_uppercase:
+                excitement += 1
+
+        if letter == "!":
+            exclamation_streak += 1
+            excitement += exclamation_streak
+            maximum_possible_excitement += exclamation_streak
+        else:
+            exclamation_streak = 0
+
+    if maximum_possible_excitement == 0:
+        return False
+
+    # Happy words are also exciting!!!
+    for happy_word in HAPPY_WORDS:
+        if happy_word in commit_subject.lower():
+            excitement += len(happy_word)
+
+    return excitement / maximum_possible_excitement > 0.6
+
+
 def verify_legal_commit_subject(commit_subject: str) -> bool:
     if not is_suitably_exotic(commit_subject):
         with Color(Color.WARNING):
@@ -93,6 +123,14 @@ def verify_legal_commit_subject(commit_subject: str) -> bool:
                 file=sys.stderr,
             )
             print("     🎯 Less tryhard speak thx", file=sys.stderr)
+        return False
+    if not is_suitably_exciting(commit_subject):
+        with Color(Color.WARNING):
+            print(
+                f"   Sorry, got bored {random.choice(BORED_EMOJI)}, not enough excitement '_'",
+                file=sys.stderr,
+            )
+            print("     🎯 SHOW SOME PASSION!!!!", file=sys.stderr)
         return False
 
     return True
