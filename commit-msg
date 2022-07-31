@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+import sys
+
+
+def is_suitably_exotic(commit_subject: str) -> bool:
+    exotic_letter_count = 0
+    for letter in commit_subject:
+        if ord(letter) > 255:
+            exotic_letter_count += 1
+
+    return exotic_letter_count / len(commit_subject) > 0.1
+
+
+def verify_legal_commit_subject(commit_subject: str) -> bool:
+    if not is_suitably_exotic(commit_subject):
+        return False
+    return True
+
+
+def remove_comments_from_commit(commit_message: list[str]) -> list[str]:
+    return [line for line in commit_message if len(line) > 0 and line[0] != "#"]
+
+
+if __name__ == "__main__":
+    commit_message_file = sys.argv[1]
+    whole_commit_message = open(commit_message_file, "r").readlines()
+    commit_message = remove_comments_from_commit(whole_commit_message)
+
+    if not verify_legal_commit_subject(commit_message[0]):
+        exit(1)
