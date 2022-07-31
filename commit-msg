@@ -1,6 +1,27 @@
 #!/usr/bin/env python3
 import sys
 
+HAPPY_WORDS = [
+    "happy",
+    "cute",
+    "exciting",
+    "fun",
+    "oopsy",
+    "可愛い",
+    "おいしい",
+]
+
+BORING_WORDS = [
+    "legacy",
+    "regression",
+    "bug",
+    "typo",
+    "crash",
+    "update",
+    "deprecation",
+    "bump",
+]
+
 
 def is_suitably_exotic(commit_subject: str) -> bool:
     exotic_letter_count = 0
@@ -11,9 +32,22 @@ def is_suitably_exotic(commit_subject: str) -> bool:
     return exotic_letter_count / len(commit_subject) > 0.1
 
 
+def does_contains_word_in_list(word_list: list[str], commit_subject: str) -> bool:
+    lowercase_commit_subject = commit_subject.lower()
+    for word in word_list:
+        if word in lowercase_commit_subject:
+            return True
+    return False
+
+
 def verify_legal_commit_subject(commit_subject: str) -> bool:
     if not is_suitably_exotic(commit_subject):
         return False
+    if not does_contains_word_in_list(HAPPY_WORDS, commit_subject):
+        return False
+    if does_contains_word_in_list(BORING_WORDS, commit_subject):
+        return False
+
     return True
 
 
